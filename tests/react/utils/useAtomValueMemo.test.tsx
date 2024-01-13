@@ -84,6 +84,6 @@ it('useAtomValueMemo with object', async () => {
     getByText('used count: 4')
   })
   expect(unusedRenderCount).toBeLessThan(usedRenderCount)
-  // on StrictMode, callback inside `setState` is called twice
-  expect(usedRenderCount - unusedRenderCount).toBe(4 * 2)
+  // in development mode, `setCount` is called twice, so we use division.
+  expect(usedRenderCount / unusedRenderCount).toBe(3)
 })
