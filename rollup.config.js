@@ -3,7 +3,6 @@ const alias = require('@rollup/plugin-alias')
 const babelPlugin = require('@rollup/plugin-babel')
 const resolve = require('@rollup/plugin-node-resolve')
 const replace = require('@rollup/plugin-replace')
-const terser = require('@rollup/plugin-terser')
 const typescript = require('@rollup/plugin-typescript')
 const banner2 = require('rollup-plugin-banner2')
 const { default: esbuild } = require('rollup-plugin-esbuild')
@@ -135,9 +134,9 @@ function createUMDConfig(input, output, env, clientOnly) {
         delimiters: ['\\b', '\\b(?!(\\.|/))'],
         preventAssignment: true,
       }),
+      getEsbuild(env),
       babelPlugin(getBabelOptions({ ie: 11 })),
       banner2(() => clientOnly && cscComment),
-      ...(env === 'production' ? [terser()] : []),
     ],
   }
 }
