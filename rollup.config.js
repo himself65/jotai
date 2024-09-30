@@ -3,11 +3,28 @@ const alias = require('@rollup/plugin-alias')
 const babelPlugin = require('@rollup/plugin-babel')
 const resolve = require('@rollup/plugin-node-resolve')
 const replace = require('@rollup/plugin-replace')
-const terser = require('@rollup/plugin-terser')
 const typescript = require('@rollup/plugin-typescript')
 const banner2 = require('rollup-plugin-banner2')
 const { default: esbuild } = require('rollup-plugin-esbuild')
 const createBabelConfig = require('./babel.config.js')
+const { minify } = require('uglify-js')
+
+const createMinifyPlugin = () => {
+  return {
+    name: 'uglify',
+    transform(code, id) {
+      const result = minify(code, {
+        sourceMap: {
+          filename: id,
+        }
+      })
+      if (result.error) {
+        throw result.error
+      }
+      return { code: result.code, map: result.map }
+    },
+  }
+}
 
 const extensions = ['.js', '.ts', '.tsx']
 const { root } = path.parse(process.cwd())
@@ -137,7 +154,7 @@ function createUMDConfig(input, output, env, clientOnly) {
       }),
       babelPlugin(getBabelOptions({ ie: 11 })),
       banner2(() => clientOnly && cscComment),
-      ...(env === 'production' ? [terser()] : []),
+      env === 'production' ? createMinifyPlugin() : null
     ],
   }
 }
