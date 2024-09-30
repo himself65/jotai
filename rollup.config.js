@@ -134,9 +134,12 @@ function createUMDConfig(input, output, env, clientOnly) {
         delimiters: ['\\b', '\\b(?!(\\.|/))'],
         preventAssignment: true,
       }),
-      getEsbuild(env),
       babelPlugin(getBabelOptions({ ie: 11 })),
       banner2(() => clientOnly && cscComment),
+      esbuild({
+        minify: env === 'production',
+        target: 'ie11',
+      })
     ],
   }
 }
